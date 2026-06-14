@@ -1,0 +1,58 @@
+# ============================================================
+# nudity-detection-cli — Python 3.11+ (tested on Python 3.13, Apple M4)
+# ============================================================
+#
+# ⚠️  STRONGLY RECOMMENDED: use a virtual environment to avoid conflicts
+#    with other packages (trl, llamafactory, numba) in your base conda env:
+#
+#   python3 -m venv .venv
+#   source .venv/bin/activate
+#   pip install -r requirements.txt
+#
+# ── Platform notes ───────────────────────────────────────────────────────────
+#   Python 3.13 + Apple Silicon (M1/M2/M3/M4):
+#     • onnxruntime < 1.20.0 has no arm64/Python-3.13 wheels → use >=1.20.0
+#     • numpy 1.26.4 has a cp313 arm64 wheel; numpy 2.x also works
+#     • PyTorch MPS acceleration is built-in on macOS — no extra steps needed
+#
+#   CUDA (Linux / Windows):
+#     pip install -r requirements.txt
+#     pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+#     # and replace onnxruntime with onnxruntime-gpu below
+# ============================================================
+
+# ── Core ──────────────────────────────────────────────────────────────────────
+torch>=2.2.0
+torchvision>=0.17.0
+Pillow>=10.0.0
+
+# numpy: 1.26.4 is the last 1.x release with a Python 3.13 wheel.
+# onnxruntime 1.20+ is compatible with both numpy 1.26.x and numpy 2.x.
+# Keeping an upper bound here preserves compatibility with numba / trl
+# when installed inside a shared environment.
+numpy>=1.26.4,<3.0.0
+
+# ── Inference runtimes ────────────────────────────────────────────────────────
+# onnxruntime is pulled in transitively by nudenet and opennsfw2.
+# Pin to the minimum that ships arm64 wheels for Python 3.13.
+onnxruntime>=1.20.0
+# GPU variant — uncomment and remove the line above for CUDA systems:
+# onnxruntime-gpu>=1.20.0
+
+# open_nsfw model — uses Keras 3.x with PyTorch backend (no TF needed).
+# Weights (~97 MB) auto-download from GitHub on first run.
+opennsfw2>=0.1.0
+# Keras 3.x: backend-agnostic, configured to use PyTorch by the detector.
+keras>=3.0.0
+
+# ── HuggingFace ecosystem (nudedetector + laion_nsfw) ─────────────────────────
+transformers>=4.40.0
+huggingface_hub>=0.22.0
+# accelerate>=0.29.0   # optional: faster GPU inference
+
+# ── NudeNet (nudenet model) ────────────────────────────────────────────────────
+nudenet>=3.1.1
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+requests>=2.31.0
+tqdm>=4.66.0
